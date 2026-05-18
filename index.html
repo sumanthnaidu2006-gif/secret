@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Muffi, im comming to meet youuuuuuu? 🥺</title>
+  <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Nunito:wght@400;600;700;900&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      min-height: 100vh;
+      background: #fff0f5;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Nunito', sans-serif;
+      overflow: hidden;
+      cursor: default;
+    }
+
+    .hearts-bg { position: fixed; inset: 0; pointer-events: none; z-index: 0; }
+    .heart-float {
+      position: absolute;
+      animation: floatUp linear infinite;
+      opacity: 0;
+    }
+    @keyframes floatUp {
+      0%   { transform: translateY(0) rotate(-10deg); opacity: 0; }
+      10%  { opacity: 0.45; }
+      90%  { opacity: 0.25; }
+      100% { transform: translateY(-110vh) rotate(10deg); opacity: 0; }
+    }
+
+    .screen {
+      display: none;
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      min-height: 100vh;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      padding: 24px 12px;
+    }
+    .screen.active { display: flex; }
+
+    @keyframes fadeIn { from { opacity: 0; transform: scale(0.97); } to { opacity: 1; transform: scale(1); } }
+    .fadein { animation: fadeIn 0.45s ease; }
+
+    /* ── Question screen ── */
+    .main-card {
+      background: #fff;
+      border-radius: 32px;
+      padding: 52px 60px 44px;
+      box-shadow: 0 20px 80px rgba(255,80,120,0.18), 0 4px 20px rgba(255,80,120,0.08);
+      text-align: center;
+      max-width: 500px;
+      width: 90vw;
+    }
+    .main-emoji {
+      font-size: 5rem;
+      display: block;
+      margin-bottom: 10px;
+      animation: bounce 2s ease-in-out infinite;
+    }
+    @keyframes bounce {
+      0%,100% { transform: translateY(0) rotate(-3deg); }
+      50%      { transform: translateY(-10px) rotate(3deg); }
+    }
+    .main-card h1 {
+      font-family: 'Pacifico', cursive;
+      font-size: clamp(1.7rem, 5vw, 2.6rem);
+      color: #ff3c78;
+      line-height: 1.25;
+      margin-bottom: 8px;
+    }
+    .main-card .sub {
+      color: #b06080;
+      font-size: 0.95rem;
+      font-weight: 600;
+      margin-bottom: 40px;
+    }
+    .buttons {
+      display: flex;
+      gap: 18px;
+      justify-content: center;
+      align-items: center;
+    }
+    .btn-yes {
+      background: linear-gradient(135deg, #ff3c78, #ff7eb3);
+      color: #fff;
+      border: none;
+      padding: 15px 44px;
+      border-radius: 50px;
+      font-family: 'Nunito', sans-serif;
+      font-size: 1.15rem;
+      font-weight: 900;
+      cursor: pointer;
+      box-shadow: 0 8px 24px rgba(255,60,120,0.4);
+      transition: transform 0.15s, box-shadow 0.15s;
+    }
+    .btn-yes:hover { transform: scale(1.08); box-shadow: 0 12px 32px rgba(255,60,120,0.55); }
+    .btn-yes:active { transform: scale(0.97); }
+
+    .btn-no {
+      position: fixed;
+      background: #f0f0f0;
+      color: #aaa;
+      border: 2.5px solid #ddd;
+      padding: 13px 32px;
+      border-radius: 50px;
+      font-family: 'Nunito', sans-serif;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      user-select: none;
+      transition: background 0.15s;
+    }
+    .btn-no:hover { background: #e8e8e8; }
+
+    /* ── Calendar screen ── */
+    .cal-screen { gap: 20px; overflow-y: auto; }
+
+    .cal-top { text-align: center; }
+    .cal-top .cal-emoji {
+      font-size: 3.5rem;
+      display: block;
+      animation: popIn 0.5s cubic-bezier(0.34,1.56,0.64,1);
+    }
+    @keyframes popIn { from { transform: scale(0); } to { transform: scale(1); } }
+    .cal-top h2 {
+      font-family: 'Pacifico', cursive;
+      font-size: clamp(1.5rem, 4vw, 2.2rem);
+      color: #ff3c78;
+      margin: 8px 0 4px;
+    }
+    .cal-top p { color: #b06080; font-weight: 600; font-size: 0.9rem; }
+
+    .calendar-box {
+      background: #fff;
+      border-radius: 24px;
+      box-shadow: 0 16px 60px rgba(255,60,120,0.18);
+      padding: 26px 22px;
+      width: min(460px, 94vw);
+    }
+    .cal-nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 18px;
+    }
+    .cal-nav button {
+      background: #fff0f5;
+      border: 2px solid #ffd0e0;
+      border-radius: 50%;
+      width: 36px; height: 36px;
+      font-size: 1.1rem;
+      cursor: pointer;
+      color: #ff3c78;
+      font-weight: 900;
+      transition: background 0.15s;
+    }
+    .cal-nav button:hover { background: #ffe0ec; }
+    .cal-nav .month-lbl {
+      font-family: 'Pacifico', cursive;
+      font-size: 1.15rem;
+      color: #ff3c78;
+    }
+    .day-names {
+      display: grid;
+      grid-template-columns: repeat(7,1fr);
+      gap: 5px;
+      margin-bottom: 4px;
+    }
+    .dn {
+      text-align: center;
+      font-size: 0.68rem;
+      font-weight: 900;
+      color: #ccc;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      padding-bottom: 4px;
+    }
+    .dn.wknd { color: #ff3c78; }
+
+    .cal-days { display: grid; grid-template-columns: repeat(7,1fr); gap: 5px; }
+    .cal-cell {
+      aspect-ratio: 1;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: #e8d0d8;
+      cursor: default;
+    }
+    .cal-cell.wknd-day {
+      background: linear-gradient(135deg, #fff0f5, #ffe4ef);
+      color: #ff3c78;
+      cursor: pointer;
+      border: 2px solid #ffd6e8;
+      transition: transform 0.15s, box-shadow 0.15s, background 0.15s;
+    }
+    .cal-cell.wknd-day:hover {
+      transform: scale(1.12);
+      box-shadow: 0 4px 16px rgba(255,60,120,0.25);
+      background: linear-gradient(135deg, #ff3c78, #ff7eb3);
+      color: #fff;
+      border-color: #ff3c78;
+    }
+    .cal-cell.wknd-day.sel {
+      background: linear-gradient(135deg, #ff3c78, #ff7eb3);
+      color: #fff;
+      border-color: #ff3c78;
+      box-shadow: 0 4px 16px rgba(255,60,120,0.4);
+    }
+    .cal-footer {
+      margin-top: 14px;
+      text-align: center;
+      font-size: 0.85rem;
+      color: #d090a8;
+      font-weight: 600;
+      min-height: 1.4em;
+    }
+
+    .confetti-piece {
+      position: fixed;
+      border-radius: 2px;
+      pointer-events: none;
+      animation: fall 1.4s ease-out forwards;
+      z-index: 500;
+    }
+    @keyframes fall {
+      0%   { transform: translateY(0) rotate(0); opacity: 1; }
+      100% { transform: translateY(80vh) rotate(720deg); opacity: 0; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="hearts-bg" id="heartsBg"></div>
+
+  <!-- Screen 1: Question -->
+  <div class="screen active" id="screenQ">
+    <div class="main-card fadein">
+      <span class="main-emoji">😢</span>
+      <h1>Muffi, i'm comming to meet youuuuuuu? 🥺</h1>
+      <p class="sub">tap yes and please say no cheppakuuuuuuuuu 😭</p>
+      <div class="buttons">
+        <button class="btn-yes" onclick="sayYes()">Yes! 😉</button>
+        <button class="btn-no" id="noBtn">No 🙅</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Screen 2: Calendar -->
+  <div class="screen cal-screen" id="screenCal">
+    <div class="cal-top fadein">
+      <span class="cal-emoji">🥳</span>
+      <h2>Yezzzzz date select cheyyyyyy💕</h2>
+      <p>Only Saturdays & Sundays ee nee neeku naku kali 😭😭</p>
+    </div>
+    <div class="calendar-box fadein">
+      <div class="cal-nav">
+        <button onclick="changeMonth(-1)">‹</button>
+        <span class="month-lbl" id="monthLbl"></span>
+        <button onclick="changeMonth(1)">›</button>
+      </div>
+      <div class="day-names">
+        <div class="dn wknd">Sun</div>
+        <div class="dn">Mon</div>
+        <div class="dn">Tue</div>
+        <div class="dn">Wed</div>
+        <div class="dn">Thu</div>
+        <div class="dn">Fri</div>
+        <div class="dn wknd">Sat</div>
+      </div>
+      <div class="cal-days" id="calDays"></div>
+      <div class="cal-footer" id="calFooter">tap a Saturday or Sunday 🥲</div>
+    </div>
+  </div>
+
+  <script>
+    // floating hearts
+    const heartsBg = document.getElementById('heartsBg');
+    const hEmojis = ['❤️','💕','💖','💗','💓','💞','🌸','✨'];
+    function spawnHeart() {
+      const el = document.createElement('span');
+      el.className = 'heart-float';
+      el.textContent = hEmojis[Math.floor(Math.random() * hEmojis.length)];
+      el.style.left = Math.random() * 100 + 'vw';
+      el.style.bottom = '-40px';
+      const dur = 6 + Math.random() * 8;
+      el.style.animationDuration = dur + 's';
+      el.style.animationDelay = Math.random() * 2 + 's';
+      el.style.fontSize = (0.8 + Math.random() * 1.2) + 'rem';
+      heartsBg.appendChild(el);
+      setTimeout(() => el.remove(), (dur + 3) * 1000);
+    }
+    setInterval(spawnHeart, 700);
+    for (let i = 0; i < 6; i++) spawnHeart();
+
+    // no button
+    const noBtn = document.getElementById('noBtn');
+    noBtn.style.left = (window.innerWidth / 2 + 55) + 'px';
+    noBtn.style.top  = (window.innerHeight / 2 + 28) + 'px';
+
+    function flee(cx, cy) {
+      const r = noBtn.getBoundingClientRect();
+      const bx = r.left + r.width / 2, by = r.top + r.height / 2;
+      const dx = cx - bx, dy = cy - by;
+      if (Math.hypot(dx, dy) < 150) {
+        const ang = Math.atan2(dy, dx);
+        let nx = bx - Math.cos(ang) * 255 - r.width / 2;
+        let ny = by - Math.sin(ang) * 255 - r.height / 2;
+        nx = Math.max(10, Math.min(window.innerWidth  - r.width  - 10, nx));
+        ny = Math.max(10, Math.min(window.innerHeight - r.height - 10, ny));
+        noBtn.style.left = nx + 'px';
+        noBtn.style.top  = ny + 'px';
+      }
+    }
+    document.addEventListener('mousemove', e => flee(e.clientX, e.clientY));
+    document.addEventListener('touchmove', e => flee(e.touches[0].clientX, e.touches[0].clientY), { passive: true });
+
+    // yes
+    function sayYes() {
+      document.getElementById('screenQ').classList.remove('active');
+      document.getElementById('screenCal').classList.add('active');
+      confetti();
+      renderCal();
+    }
+
+    // confetti
+    function confetti() {
+      const cols = ['#ff3c78','#ff7eb3','#ffd6e7','#ffb347','#a8edea','#fed6e3'];
+      for (let i = 0; i < 90; i++) {
+        const c = document.createElement('div');
+        c.className = 'confetti-piece';
+        c.style.cssText = `background:${cols[i%cols.length]};left:${Math.random()*100}vw;top:-10px;animation-delay:${Math.random()*0.9}s;width:${6+Math.random()*8}px;height:${6+Math.random()*8}px;border-radius:${Math.random()>.5?'50%':'3px'}`;
+        document.body.appendChild(c);
+        setTimeout(() => c.remove(), 2600);
+      }
+    }
+
+    // calendar
+    const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+    const now = new Date();
+    let cy = now.getFullYear(), cm = now.getMonth();
+    let selCell = null;
+
+    function changeMonth(d) {
+      cm += d;
+      if (cm > 11) { cm = 0; cy++; }
+      if (cm < 0)  { cm = 11; cy--; }
+      renderCal();
+    }
+
+    function renderCal() {
+      document.getElementById('monthLbl').textContent = `${MONTHS[cm]} ${cy}`;
+      const container = document.getElementById('calDays');
+      container.innerHTML = '';
+      const firstDay = new Date(cy, cm, 1).getDay();
+      const days = new Date(cy, cm + 1, 0).getDate();
+      for (let i = 0; i < firstDay; i++) {
+        const e = document.createElement('div');
+        e.className = 'cal-cell';
+        container.appendChild(e);
+      }
+      for (let d = 1; d <= days; d++) {
+        const dow = new Date(cy, cm, d).getDay();
+        const isWknd = dow === 0 || dow === 6;
+        const cell = document.createElement('div');
+        cell.className = 'cal-cell' + (isWknd ? ' wknd-day' : '');
+        cell.textContent = isWknd ? d : '';
+        if (isWknd) {
+          cell.addEventListener('click', () => {
+            if (selCell) selCell.classList.remove('sel');
+            cell.classList.add('sel');
+            selCell = cell;
+            const dayName = dow === 6 ? 'Saturday' : 'Sunday';
+            document.getElementById('calFooter').textContent =
+              `🫠🫠 ${dayName}, ${MONTHS[cm]} ${d}, ${cy} — can't wait! 🫠`;
+            confetti();
+          });
+        }
+        container.appendChild(cell);
+      }
+    }
+  </script>
+</body>
+</html>
