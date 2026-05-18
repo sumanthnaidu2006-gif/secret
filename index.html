@@ -351,9 +351,11 @@
     let selCell = null;
 
     function changeMonth(d) {
-      cm += d;
-      if (cm > 11) { cm = 0; cy++; }
-      if (cm < 0)  { cm = 11; cy--; }
+      const newM = cm + d;
+      const newY = cy + (newM > 11 ? 1 : newM < 0 ? -1 : 0);
+      const adjM = (newM + 12) % 12;
+      if (newY > 2026) return;
+      cm = adjM; cy = newY;
       renderCal();
     }
 
