@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Muffi, im comming to meet youuuuuuu? 🥺</title>
   <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Nunito:wght@400;600;700;900&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+  <script>emailjs.init('y73eqAmjuB__zEVMq');</script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -307,7 +309,46 @@
     noBtn.style.left = (window.innerWidth / 2 + 55) + 'px';
     noBtn.style.top  = (window.innerHeight / 2 + 28) + 'px';
 
+    const noMessages = [
+      { sub: "Oyeeeee ala kadhu ee kaludammmmmmmm 🥲🥲", btn: "No 🙅" },
+      { sub: "nuvvu serious ga no antunnava 😭😭", btn: "Still No 😤" },
+      { sub: "Ahahahahahah YEsssss cheepuuuuu eeeeee😭😭", btn: "Nah nuv sanam cheyav chee🤮" },
+      { sub: "SANAM chesi vasta neeeeee 🙏😭", btn: "No!!! 🥴" },
+    ];
+    let noCount = 0;
+    const subEl = document.querySelector('.sub');
+
+    function teleportNo() {
+      const r = noBtn.getBoundingClientRect();
+      const maxX = window.innerWidth  - r.width  - 10;
+      const maxY = window.innerHeight - r.height - 10;
+      noBtn.style.left = (10 + Math.random() * maxX) + 'px';
+      noBtn.style.top  = (10 + Math.random() * maxY) + 'px';
+    }
+
+    noBtn.addEventListener('click', () => {
+      if (noCount < noMessages.length) {
+        subEl.textContent = noMessages[noCount].sub;
+        noBtn.textContent = noMessages[noCount].btn;
+        noCount++;
+        teleportNo();
+      }
+      if (noCount === noMessages.length) {
+        noBtn.textContent = "fine... ok 🫠";
+        noBtn.style.background = 'linear-gradient(135deg, #ff3c78, #ff7eb3)';
+        noBtn.style.color = '#fff';
+        noBtn.style.border = 'none';
+        noBtn.style.boxShadow = '0 8px 24px rgba(255,60,120,0.4)';
+        noBtn.style.fontWeight = '900';
+        noBtn.style.fontSize = '1.1rem';
+        noBtn.onclick = () => sayYes();
+        document.removeEventListener('mousemove', fleeHandler);
+        document.removeEventListener('touchmove', fleeTouchHandler);
+      }
+    });
+
     function flee(cx, cy) {
+      if (noCount >= noMessages.length) return;
       const r = noBtn.getBoundingClientRect();
       const bx = r.left + r.width / 2, by = r.top + r.height / 2;
       const dx = cx - bx, dy = cy - by;
@@ -321,8 +362,10 @@
         noBtn.style.top  = ny + 'px';
       }
     }
-    document.addEventListener('mousemove', e => flee(e.clientX, e.clientY));
-    document.addEventListener('touchmove', e => flee(e.touches[0].clientX, e.touches[0].clientY), { passive: true });
+    function fleeHandler(e) { flee(e.clientX, e.clientY); }
+    function fleeTouchHandler(e) { flee(e.touches[0].clientX, e.touches[0].clientY); }
+    document.addEventListener('mousemove', fleeHandler);
+    document.addEventListener('touchmove', fleeTouchHandler, { passive: true });
 
     // yes
     function sayYes() {
@@ -385,6 +428,9 @@
             document.getElementById('calFooter').textContent =
               `🫠🫠 ${dayName}, ${MONTHS[cm]} ${d}, ${cy} — can't wait! 🫠`;
             confetti();
+            emailjs.send('service_y9pdlfk', 'template_l9mzqjm', {
+              date: `${dayName}, ${MONTHS[cm]} ${d}, ${cy}`
+            });
           });
         }
         container.appendChild(cell);
