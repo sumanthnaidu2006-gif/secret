@@ -238,6 +238,86 @@
       0%   { transform: translateY(0) rotate(0); opacity: 1; }
       100% { transform: translateY(80vh) rotate(720deg); opacity: 0; }
     }
+
+    /* ── Confirmation screen ── */
+    .confirm-card {
+      background: #fff;
+      border-radius: 36px;
+      padding: 52px 56px 48px;
+      box-shadow: 0 24px 90px rgba(255,80,120,0.22), 0 4px 24px rgba(255,80,120,0.10);
+      text-align: center;
+      max-width: 480px;
+      width: 92vw;
+      animation: popIn 0.55s cubic-bezier(0.34,1.56,0.64,1);
+    }
+    .confirm-big-emoji {
+      font-size: 5.5rem;
+      display: block;
+      margin-bottom: 14px;
+      animation: heartbeat 1.4s ease-in-out infinite;
+    }
+    @keyframes heartbeat {
+      0%,100% { transform: scale(1); }
+      14%      { transform: scale(1.22); }
+      28%      { transform: scale(1); }
+      42%      { transform: scale(1.14); }
+      56%      { transform: scale(1); }
+    }
+    .confirm-card h2 {
+      font-family: 'Pacifico', cursive;
+      font-size: clamp(1.6rem, 4.5vw, 2.4rem);
+      color: #ff3c78;
+      line-height: 1.3;
+      margin-bottom: 10px;
+    }
+    .confirm-card .confirm-sub {
+      color: #b06080;
+      font-size: 0.92rem;
+      font-weight: 600;
+      margin-bottom: 28px;
+      line-height: 1.6;
+    }
+    .confirm-date-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: linear-gradient(135deg, #fff0f5, #ffe4ef);
+      border: 2px solid #ffd0e0;
+      border-radius: 50px;
+      padding: 13px 28px;
+      font-size: 1.05rem;
+      font-weight: 900;
+      color: #ff3c78;
+      margin-bottom: 28px;
+      box-shadow: 0 4px 16px rgba(255,60,120,0.15);
+    }
+    .confirm-divider {
+      width: 60px;
+      height: 3px;
+      background: linear-gradient(90deg, #ff3c78, #ff7eb3);
+      border-radius: 2px;
+      margin: 0 auto 24px;
+    }
+    .confirm-note {
+      font-size: 0.88rem;
+      color: #c090a8;
+      font-weight: 600;
+      line-height: 1.8;
+    }
+    .btn-change {
+      margin-top: 28px;
+      background: transparent;
+      border: 2px solid #ffd0e0;
+      color: #e090b0;
+      padding: 10px 28px;
+      border-radius: 50px;
+      font-family: 'Nunito', sans-serif;
+      font-size: 0.88rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s, border-color 0.15s;
+    }
+    .btn-change:hover { background: #fff0f5; border-color: #ff7eb3; color: #ff3c78; }
   </style>
 </head>
 <body>
@@ -281,6 +361,25 @@
       </div>
       <div class="cal-days" id="calDays"></div>
       <div class="cal-footer" id="calFooter">tap a Saturday or Sunday 🥲</div>
+    </div>
+  </div>
+
+  <!-- Screen 3: Confirmation -->
+  <div class="screen" id="screenConfirm">
+    <div class="confirm-card">
+      <span class="confirm-big-emoji">🥳</span>
+      <h2>Inkaa Konni rojuleeeeeeeeeeee neeeeeeeeee Muffi!! 🕺💃</h2>
+      <p class="confirm-sub">Sooooo mana first meet onnnnnn.....</p>
+      <div class="confirm-date-pill">
+        <span>📅</span>
+        <span id="confirmedDate">—</span>
+      </div>
+      <div class="confirm-divider"></div>
+      <p class="confirm-note">
+        kanii anni rojulu wait cheyaliiii 😭😭😭<br/>
+        Bokkalagaaaaaaa😭😭
+      </p>
+      <br/>
     </div>
   </div>
 
@@ -431,10 +530,24 @@
             emailjs.send('service_y9pdlfk', 'template_l9mzqjm', {
               date: `${dayName}, ${MONTHS[cm]} ${d}, ${cy}`
             });
+            setTimeout(() => showConfirm(dayName, d, cm, cy), 900);
           });
         }
         container.appendChild(cell);
       }
+    }
+    function showConfirm(dayName, d, month, year) {
+      document.getElementById('confirmedDate').textContent =
+        `${dayName}, ${MONTHS[month]} ${d}, ${year}`;
+      document.getElementById('screenCal').classList.remove('active');
+      document.getElementById('screenConfirm').classList.add('active');
+      confetti();
+      setTimeout(confetti, 500);
+    }
+
+    function changeDate() {
+      document.getElementById('screenConfirm').classList.remove('active');
+      document.getElementById('screenCal').classList.add('active');
     }
   </script>
 </body>
